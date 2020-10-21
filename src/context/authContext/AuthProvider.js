@@ -5,7 +5,7 @@ import authReducer from './authReducer';
 import {auth} from '../../firebase/config'
 
 //Import Actions
-import { SIGN_UP_USER } from './actions'
+import { SIGN_UP_USER, SIGN_OUT } from './actions'
 
 const AuthContext = createContext();
 
@@ -32,11 +32,34 @@ const AuthProvider = ({children}) => {
         return unsubscribe
     }, [])
 
+    //Login User
+    const login = (email,password) => auth.signInWithEmailAndPassword(email,password);
+
+    //Logout User
+    const logout = () => {
+        dispatch({type: SIGN_OUT });
+        return auth.signOut()
+    }
+
+    //Reset Password
+    const resetPassword = (email) => auth.sendPasswordResetEmail(email);
+
+    //Update Email
+    const updateEmail = (email) => state.currentUser.updateEmail(email);
+
+    //Update Password 
+    const updatePassword = (password) => state.currentUser.updatePassword(password);
+
     return (
         <AuthContext.Provider
         value = {{
             currentUser: state.currentUser,
-            signup
+            signup,
+            login,
+            logout,
+            resetPassword,
+            updateEmail,
+            updatePassword
         }}
         >
             {!state.loading && children}

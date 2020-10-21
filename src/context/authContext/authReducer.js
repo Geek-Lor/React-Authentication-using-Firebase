@@ -1,5 +1,5 @@
 //Import Actions
-import { SIGN_UP_USER } from './actions';
+import { SIGN_OUT, SIGN_UP_USER } from './actions';
 
 export default (state, action) => {
     switch (action.type) {
@@ -9,6 +9,12 @@ export default (state, action) => {
                 currentUser: action.payload,
                 loading: false
             }
+        case SIGN_OUT: 
+            return {
+                ...state,
+                currentUser: null,
+                loading: false
+            }    
         default:
             return state
     }

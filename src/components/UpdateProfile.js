@@ -7,9 +7,9 @@ import { Form, Button , Card, Alert } from 'react-bootstrap'
 //Use Auth Context
 import { useAuth } from '../context/authContext/AuthProvider'
 
-const Signup = () => {
+const UpdateProfile = () => {
 
-   const { signup } = useAuth();
+   const { currentUser, updateEmail, updatePassword } = useAuth();
    const  history  = useHistory()
 
 
@@ -27,7 +27,7 @@ const Signup = () => {
 
    const handleChange = (e) => setUser({...user, [e.target.name]: e.target.value})
 
-   const handleSubmit = async (e) => {
+   const handleSubmit =  (e) => {
        e.preventDefault()
        if(password !== confirmPassword){
            setUser({
@@ -38,27 +38,35 @@ const Signup = () => {
            return setError('Passwords do not Match');
        }
 
-       try {
-           setError('');
-           setLoading(true);
-           await signup(email,password);
-           history.push('/');
-       } catch (error) {
-           setError(error.message);
-       }
-       setLoading(false);
+        
+
+        const promises = []    
+       
+        if(email !== currentUser.email){
+            promises.push(updateEmail(email))
+        }
+
+        if(password){
+            promises.push(updatePassword(password))
+        }
+
+        Promise.all(promises)
+               .then(() => history.push('/'))
+               .catch((error) => setError(error.message))
+               .finally(() => setLoading(false))
+    
    }
-
-    if(error) {
-        setTimeout(() => setError(''), 3000);
-    }
-
+    
+   if(error) {
+             setTimeout(() => setError(''), 3000);
+        }
+   
 
     return (
         <>
            <Card>
                <Card.Body>
-                   <h2 className="text-centre mb-4"> Sign Up </h2>
+                   <h2 className="text-centre mb-4"> Update Profile </h2>
                     { error && <Alert variant='danger'>{error}</Alert>}
                 <Form onSubmit= {handleSubmit}>
                     <Form.Group id='email'>
@@ -68,6 +76,7 @@ const Signup = () => {
                         name='email'
                         value={email} 
                         onChange={handleChange}
+                        defaultValue={currentUser.email}
                         required
                         />
                     </Form.Group>
@@ -78,7 +87,7 @@ const Signup = () => {
                         name='password'
                         value={password} 
                         onChange={handleChange}
-                        required
+                        placeholder='Leave blank If you want to retain the same password'
                         />
                     </Form.Group>
                     <Form.Group id='confirmPassword'>
@@ -88,19 +97,19 @@ const Signup = () => {
                         name='confirmPassword'
                         value={confirmPassword}
                         onChange={handleChange} 
-                        required
+                        placeholder='Leave blank If you want to retain the same password'
                         />
                     </Form.Group>
                     <Button disabled={loading} className="w-100" type='submit'>
-                        Sign Up
+                        Update Profile
                     </Button>
                 </Form>
                </Card.Body>
            </Card>
-           <div className="w-100 text-center mt-2">
-            Already have an Account? <Link to = '/login'>Log In </Link>  
-            </div> 
+        <div className="w-100 text-center mt-2">
+            <Link to = '/'>Cancel </Link>  
+        </div> 
         </>
     )
 }
-export default Signup
+export default UpdateProfile

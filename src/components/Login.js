@@ -1,15 +1,15 @@
 import React, {useState} from 'react'
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom'
 
-//Import Bootstrap Styling
+//Bootstrap Styling
 import { Form, Button , Card, Alert } from 'react-bootstrap'
 
 //Use Auth Context
 import { useAuth } from '../context/authContext/AuthProvider'
 
-const Signup = () => {
+const Login = () => {
 
-   const { signup } = useAuth();
+   const { login } = useAuth();
    const  history  = useHistory()
 
 
@@ -23,25 +23,15 @@ const Signup = () => {
    const [error, setError] = useState('');
    const [loading, setLoading] = useState(false);
 
-   const {email, password, confirmPassword} = user;
+   const {email, password} = user;
 
    const handleChange = (e) => setUser({...user, [e.target.name]: e.target.value})
 
    const handleSubmit = async (e) => {
        e.preventDefault()
-       if(password !== confirmPassword){
-           setUser({
-               email, 
-               password: '',
-               confirmPassword: ''
-            });
-           return setError('Passwords do not Match');
-       }
-
        try {
-           setError('');
            setLoading(true);
-           await signup(email,password);
+           await login(email,password);
            history.push('/');
        } catch (error) {
            setError(error.message);
@@ -58,7 +48,7 @@ const Signup = () => {
         <>
            <Card>
                <Card.Body>
-                   <h2 className="text-centre mb-4"> Sign Up </h2>
+                   <h2 className="text-centre mb-4"> Login </h2>
                     { error && <Alert variant='danger'>{error}</Alert>}
                 <Form onSubmit= {handleSubmit}>
                     <Form.Group id='email'>
@@ -81,26 +71,19 @@ const Signup = () => {
                         required
                         />
                     </Form.Group>
-                    <Form.Group id='confirmPassword'>
-                        <Form.Label>Confirm Password</Form.Label>
-                        <Form.Control 
-                        type='password' 
-                        name='confirmPassword'
-                        value={confirmPassword}
-                        onChange={handleChange} 
-                        required
-                        />
-                    </Form.Group>
                     <Button disabled={loading} className="w-100" type='submit'>
-                        Sign Up
+                        Login
                     </Button>
                 </Form>
+                <div className="w-100 text-center mt-3">
+                    <Link to = '/forgot-password'>Forgot Password? </Link>  
+                </div> 
                </Card.Body>
            </Card>
            <div className="w-100 text-center mt-2">
-            Already have an Account? <Link to = '/login'>Log In </Link>  
+            Need an Account? <Link to='/signup' >Sign Up </Link>  
             </div> 
         </>
     )
 }
-export default Signup
+export default Login
